@@ -14,9 +14,12 @@ router.post(
   "/signUp",
 
   [
-    body("username", "please enter a valid user name ").isLength({ min: 5 }),
+    body("first_name", "please enter a valid user name ").isLength({ min: 4 }),
     body("email", "please enter a valid email ").isEmail(),
     body("password", "please enter a valid password ").isLength({ min: 5 }),
+    body("mobile_number", "please enter a valid Mobile Number ").isLength({
+      min: 10,
+    }),
   ], //// For Validation
 
   async (req, res) => {
@@ -41,7 +44,10 @@ router.post(
       const salt = bcrypt.genSaltSync(5);
       const hash = bcrypt.hashSync(password, salt);
       createUser = await new User({
-        username: req.body.username,
+        first_name: req.body.first_name,
+        last_name: req.body.last_name,
+        company_name: req.body.company_name,
+        mobile_number: req.body.mobile_number,
         email: req.body.email,
         password: hash,
       });
@@ -55,10 +61,10 @@ router.post(
   }
 );
 //////////////////////////////////////////////////////////////////login Route :
-///////////////////////// http://localhost:9046/api/auth/login
+///////////////////////// http://localhost:9046/api/auth/signIN
 
 router.post(
-  "/login",
+  "/signIN",
   [
     body("email", "please enter a valid email ").isEmail(),
     body("password", "please enter a valid password ").exists(),
@@ -102,5 +108,8 @@ router.post(
     }
   }
 );
+
+//////////////////////////////////////////////////////////////////login Route :
+///////////////////////// http://localhost:9046/api/auth/User
 
 module.exports = router;
