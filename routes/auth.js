@@ -4,6 +4,7 @@ const User = require("../models/user");
 const { body, validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const auth_user = require("../middlewares/Auth_user");
 const jwt_key = "sdfghjkla@$%&";
 
 // const { create } = require("../models/user");
@@ -14,7 +15,7 @@ router.post(
   "/signUp",
 
   [
-    body("first_name", "please enter a valid user name ").isLength({ min: 4 }),
+    body("first_name", "please enter a valid name ").isLength({ min: 4 }),
     body("email", "please enter a valid email ").isEmail(),
     body("password", "please enter a valid password ").isLength({ min: 5 }),
     body("mobile_number", "please enter a valid Mobile Number ").isLength({
@@ -60,7 +61,7 @@ router.post(
     }
   }
 );
-//////////////////////////////////////////////////////////////////login Route :
+//////////////////////////////////////////////////////////////////signIN Route :
 ///////////////////////// http://localhost:9046/api/auth/signIN
 
 router.post(
@@ -103,13 +104,33 @@ router.post(
       });
       console.log(authtoken);
     } catch (error) {
-      console.error(errors);
+      console.error(error);
       res.status(500).send("internal server error");
     }
   }
 );
 
-//////////////////////////////////////////////////////////////////login Route :
+//////////////////////////////////////////////////////////////////Get_Users :
 ///////////////////////// http://localhost:9046/api/auth/User
+// router.get("/User/:_id", async (req, res) => {
+//   try {
+//     const user_id = req.params._id;
+//     const user = await User.findOne({ user_id });
+//     res.json({ message: "success", data: user });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send("internal server error");
+//   }
+// });
+router.get("/User", auth_user, async (req, res) => {
+  try {
+    const user_id = req.user.id;
+    const user = await User.findById(user_id);
+    res.json({ message: "success", data: user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("internal server error");
+  }
+});
 
 module.exports = router;
