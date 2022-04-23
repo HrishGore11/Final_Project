@@ -6,6 +6,8 @@ const router = require("./routes/auth.js");
 
 app.use(express.json());
 app.use("/api/auth", require("./routes/auth"));
+app.use("/api/address", require("./routes/address"));
+
 ///////KvgDnLWgz9wc5VM2
 mongoose
   .connect(

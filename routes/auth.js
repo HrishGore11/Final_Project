@@ -4,8 +4,8 @@ const User = require("../models/user");
 const { body, validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const auth_user = require("../middlewares/Auth_user");
 const jwt_key = "sdfghjkla@$%&";
+const auth_user = require("../middlewares/Auth_user");
 
 // const { create } = require("../models/user");
 
@@ -15,7 +15,7 @@ router.post(
   "/signUp",
 
   [
-    body("first_name", "please enter a valid name ").isLength({ min: 4 }),
+    body("first_name", "please enter a valid user name ").isLength({ min: 4 }),
     body("email", "please enter a valid email ").isEmail(),
     body("password", "please enter a valid password ").isLength({ min: 5 }),
     body("mobile_number", "please enter a valid Mobile Number ").isLength({
@@ -29,12 +29,6 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
     try {
-      //   let createUser = await User.findOne({
-      //     email: req.body.email,
-      //   });
-      //   if (createUser) {
-      //     res.json({ message: "user already Exists", success: false });
-      //   }
       let createUser = await User.findOne({ email: req.body.email });
       if (createUser) {
         return res
@@ -44,12 +38,16 @@ router.post(
       const password = req.body.password;
       const salt = bcrypt.genSaltSync(5);
       const hash = bcrypt.hashSync(password, salt);
+
       createUser = await new User({
         first_name: req.body.first_name,
         last_name: req.body.last_name,
         company_name: req.body.company_name,
         mobile_number: req.body.mobile_number,
         email: req.body.email,
+        isadmin: req.body.isadmin,
+        isseller: req.body.isseller,
+        isbuyer: req.body.isbuyer,
         password: hash,
       });
       createUser.save();
@@ -61,7 +59,7 @@ router.post(
     }
   }
 );
-//////////////////////////////////////////////////////////////////signIN Route :
+//////////////////////////////////////////////////////////////////login Route :
 ///////////////////////// http://localhost:9046/api/auth/signIN
 
 router.post(
@@ -104,24 +102,14 @@ router.post(
       });
       console.log(authtoken);
     } catch (error) {
-      console.error(error);
+      console.error(errors);
       res.status(500).send("internal server error");
     }
   }
 );
 
-//////////////////////////////////////////////////////////////////Get_Users :
+//////////////////////////////////////////////////////////////////login Route :
 ///////////////////////// http://localhost:9046/api/auth/User
-// router.get("/User/:_id", async (req, res) => {
-//   try {
-//     const user_id = req.params._id;
-//     const user = await User.findOne({ user_id });
-//     res.json({ message: "success", data: user });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send("internal server error");
-//   }
-// });
 router.get("/User", auth_user, async (req, res) => {
   try {
     const user_id = req.user.id;
